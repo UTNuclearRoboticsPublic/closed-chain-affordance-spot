@@ -107,7 +107,7 @@ def generate_robot_description_semantic_content():
     """
     # Path to the robot SRDF file
     robot_description_semantic_path = os.path.join(
-        get_package_share_directory('spot_arm_moveit2_config'),
+        get_package_share_directory('spot_moveit_config'),
         'config',
         'spot.srdf'
     )
