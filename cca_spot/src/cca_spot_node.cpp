@@ -223,19 +223,93 @@ int main(int argc, char **argv)
     // req.task_description.goal.affordance = 0.3; // 
     // req.task_description.goal.affordance = 0.78; // Max
     ///------------------------------------------------------------------///
-    //---DUFFLEBAG 5---//
+    ////---DUFFLEBAG 5---//
         
-    req.start_state.robot =(Eigen::VectorXd(6) << 0.87980,-0.32586,1.69539,1.23820,-0.64217,-0.35225)
+    //req.start_state.robot =(Eigen::VectorXd(6) << 0.87980,-0.32586,1.69539,1.23820,-0.64217,-0.35225)
+    //        .finished(); 
+    //// Specify planning type
+    //req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
+
+    //// Affordance info -- Dufflebag 5
+    //req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
+    //req.task_description.affordance_info.axis = Eigen::Vector3d(1 ,0 ,0);
+    //req.task_description.affordance_info.location = Eigen::Vector3d(0.431742  ,0.348325 ,-0.417611);
+    //// req.task_description.goal.affordance = 0.2; // 
+    //req.task_description.goal.affordance = 0.32; // Max
+    ///------------------------------------------------------------------///
+    ////---NUT 1---//
+        
+    //req.start_state.robot =(Eigen::VectorXd(6) << 0.23386,-0.54563,1.08410,-0.34835,-0.50256,0.11729)
+    //        .finished(); 
+    //// Specify planning type
+    //req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
+
+    //// Affordance info -- NUT 1
+    //req.task_description.affordance_info.type = affordance_util::ScrewType::SCREW;
+    //req.task_description.affordance_info.axis = Eigen::Vector3d(1.0 ,0.0,  0.0);
+    //req.task_description.affordance_info.location = Eigen::Vector3d(0.835545  ,0.312095 ,0.0213549);
+    //req.task_description.affordance_info.pitch = 0.01;
+    //// req.task_description.goal.affordance =0.785398; // 
+    //req.task_description.goal.affordance = 2.642888; // Max
+    ///------------------------------------------------------------------///
+    ////---NUT 2---//
+        
+    //req.start_state.robot =(Eigen::VectorXd(6) << 0.30567,-0.61542,0.98007,1.56896,-0.08781,-2.46185)
+    //        .finished(); 
+    //// Specify planning type
+    //req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
+
+    //// Affordance info -- NUT 2
+    //req.task_description.affordance_info.type = affordance_util::ScrewType::SCREW;
+    //req.task_description.affordance_info.axis = Eigen::Vector3d(-1.0, 0.0, 0.0);
+    //req.task_description.affordance_info.location = Eigen::Vector3d(0.82715  ,0.323029 ,0.0522127);
+    //req.task_description.affordance_info.pitch = 0.01;
+    //req.task_description.goal.affordance =0.785398; // 
+    //// req.task_description.goal.affordance = 15*M_PI; // Max
+    ///------------------------------------------------------------------///
+    //---NUT 3---//
+        
+    // req.start_state.robot =(Eigen::VectorXd(6) <<-0.03947,-0.72948,1.24571,-1.59876,0.75301,2.38479 )
+        //     .finished(); 
+    // // Specify planning type
+    // req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
+
+    // // Affordance info -- NUT 3
+    // req.task_description.affordance_info.type = affordance_util::ScrewType::SCREW;
+    // req.task_description.affordance_info.axis = Eigen::Vector3d(1,  0,  0);
+    // req.task_description.affordance_info.location = Eigen::Vector3d(0.760197 ,-0.243811 ,0.0245757);
+    // req.task_description.affordance_info.pitch = 0.01;
+    // // req.task_description.goal.affordance =0.785398; // 
+    // // req.task_description.goal.affordance = 14.206378; // Max
+    ///------------------------------------------------------------------///
+    ////---NUT 4---//
+    //req.start_state.robot =(Eigen::VectorXd(6) <<-0.26365,-0.32357,0.72647,0.59626,-0.49524,-0.49605)
+    //        .finished(); 
+    //// Specify planning type
+    //req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
+
+    //// Affordance info -- NUT 4
+    //req.task_description.affordance_info.type = affordance_util::ScrewType::SCREW;
+    //req.task_description.affordance_info.axis = Eigen::Vector3d(1,  0,  0);
+    //req.task_description.affordance_info.location = Eigen::Vector3d(0.864756 ,-0.367491 ,0.0217763);
+    //req.task_description.affordance_info.pitch = 0.01;
+    //// req.task_description.goal.affordance =0.785398; // 
+    //// req.task_description.goal.affordance = 1.245632; // Max
+    ///------------------------------------------------------------------///
+    //---NUT 5---//
+    req.start_state.robot =(Eigen::VectorXd(6) <<-0.24940,-0.44696,0.92226,0.66251,-0.53774,-0.30187)
             .finished(); 
     // Specify planning type
     req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
 
-    // Affordance info -- Dufflebag 5
-    req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
-    req.task_description.affordance_info.axis = Eigen::Vector3d(1 ,0 ,0);
-    req.task_description.affordance_info.location = Eigen::Vector3d(0.431742  ,0.348325 ,-0.417611);
-    // req.task_description.goal.affordance = 0.2; // 
-    req.task_description.goal.affordance = 0.32; // Max
+    // Affordance info -- NUT 5
+    req.task_description.affordance_info.type = affordance_util::ScrewType::SCREW;
+    req.task_description.affordance_info.axis = Eigen::Vector3d(1,  0,  0);
+    req.task_description.affordance_info.location = Eigen::Vector3d(0.84111, -0.357813, 0.0218069);
+    req.task_description.affordance_info.pitch = 0.01;
+    // req.task_description.goal.affordance =1.0472; // 
+    req.task_description.goal.affordance = 1.861276; // Max
+    ///------------------------------------------------------------------///
 
     // Run CCA planner and executor
     if (node->run(req))
