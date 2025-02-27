@@ -129,15 +129,15 @@ int main(int argc, char **argv)
         
     // req.start_state.robot =(Eigen::VectorXd(6) << -0.05821,0.30447,1.13644,-0.10949,-1.35613,-0.00345)
     //         .finished(); 
-    // Specify planning type
+    // // Specify planning type
     // req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
 
-    // Affordance info -- Pelican 3
+    // // Affordance info -- Pelican 3
     // req.task_description.affordance_info.type = affordance_util::ScrewType::ROTATION;
     // req.task_description.affordance_info.axis = Eigen::Vector3d(0 ,-1, 0);
     // req.task_description.affordance_info.location = Eigen::Vector3d(0.933395 ,-0.0165794,  -0.508373);
     // req.task_description.goal.affordance = 0.837758; // 
-    // req.task_description.goal.affordance = 1.53; // Max
+    // // req.task_description.goal.affordance = 1.53; // Max
     ///------------------------------------------------------------------///
     //---PELICAN 4---//
         
