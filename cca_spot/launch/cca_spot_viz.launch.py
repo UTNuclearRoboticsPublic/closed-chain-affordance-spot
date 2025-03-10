@@ -168,6 +168,14 @@ def generate_launch_description():
     # Return the launch description, including robot description-related arguments and RViz node
     return launch.LaunchDescription(
         description_launch_args + launch_args + [
+            # Launch robot_state_publisher
+            launch_ros.actions.Node(
+                package='robot_state_publisher',
+                executable='robot_state_publisher',
+                name='robot_state_publisher',
+                output='screen',
+                parameters=[robot_description, use_sim_time],
+            ),
             # Launch cca_ros_viz node
             launch_ros.actions.Node(
                 package='cca_ros_viz',
