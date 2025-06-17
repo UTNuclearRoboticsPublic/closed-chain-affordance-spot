@@ -16,6 +16,7 @@
 #include <cc_affordance_planner/cc_affordance_planner_interface.hpp>
 #include <cca_ros/cca_ros.hpp>
 #include <chrono>
+#include <thread>
 
 class CcaSpot : public cca_ros::CcaRos
 {
@@ -82,7 +83,7 @@ int main(int argc, char **argv)
     RCLCPP_INFO(node->get_logger(), "CCA Planner is active");
 
     // Spin the node so joint states can be read
-    std::thread spinner_thread([node]() { rclcpp::spin(node); });
+    std::jthread spinner_thread([node]() { rclcpp::spin(node); });
 
     /// REQUIRED INPUT: Task description. For quick start, the following block provides an example task description to
     /// do a simple linear motion along the z-axis from the current robot configuration. Edit as needed. See this
@@ -115,11 +116,6 @@ int main(int argc, char **argv)
     {
         RCLCPP_ERROR(node->get_logger(), "CCA action failed");
         rclcpp::shutdown();
-    }
-
-    if (spinner_thread.joinable())
-    {
-        spinner_thread.join();
     }
 
     rclcpp::shutdown();

@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
+
 project(cca_spot)
+
+# Set C++ standard to 20
+set(CMAKE_CXX_STANDARD 20)
+
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -32,6 +37,7 @@ install(TARGETS
   ${PROJECT_NAME}_node
   DESTINATION lib/${PROJECT_NAME}
 )
+
 install(TARGETS
   ${PROJECT_NAME}_demo
   DESTINATION lib/${PROJECT_NAME}
