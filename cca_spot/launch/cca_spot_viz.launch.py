@@ -17,15 +17,16 @@ To adapt this script for a different robot, modify only the following functions:
 - `extract_cca_ros_viz_setup_params()`: Update this function to provide the correct path info to the cca_<robot>_ros_viz_setup.yaml file.
 """
 import os
-from ament_index_python.packages import get_package_share_directory
-import launch
-import launch_ros.actions
 
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
-from launch_ros.substitutions import FindPackageShare
-from launch.substitutions import FindExecutable
+import launch_ros.actions
+from ament_index_python.packages import get_package_share_directory
 from launch_ros.descriptions import ParameterValue
+from launch_ros.substitutions import FindPackageShare
+
+import launch
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import (Command, FindExecutable, LaunchConfiguration,
+                                  PathJoinSubstitution)
 
 
 def generate_robot_description_content():
@@ -137,69 +138,75 @@ def extract_cca_ros_viz_setup_params():
 
     return cca_ros_viz_setup_params
 
-
 def generate_launch_description():
     """
     Generates the full launch description to launch the cca_ros_viz node with robot_description, robot_description_semantic parameters, and RViz with a custom configuration.
     """
-    launch_args = [DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulated time (for simulation environments)'
-    )]
+    launch_args = [
+        DeclareLaunchArgument(
+            "use_sim_time",
+            default_value="false",
+            description="Use simulated time (for simulation environments)",
+        )
+    ]
 
-    robot_description_content, description_launch_args = generate_robot_description_content()
+    (
+        robot_description_content,
+        description_launch_args,
+    ) = generate_robot_description_content()
     robot_description_semantic_content = generate_robot_description_semantic_content()
     cca_ros_viz_setup_params = extract_cca_ros_viz_setup_params()
 
     robot_description = {"robot_description": robot_description_content}
-    robot_description_semantic = {"robot_description_semantic": robot_description_semantic_content}
+    robot_description_semantic = {
+        "robot_description_semantic": robot_description_semantic_content
+    }
 
-    use_sim_time = {'use_sim_time': LaunchConfiguration('use_sim_time')}
+    use_sim_time = {"use_sim_time": LaunchConfiguration("use_sim_time")}
 
     # Default Rviz config file
-    rviz_config_file = PathJoinSubstitution([
-        FindPackageShare('cca_ros_viz'),
-        'rviz',
-        'cca_ros_viz.rviz'
-    ])
-    print(rviz_config_file)
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("cca_ros_viz"), "rviz", "cca_ros_viz.rviz"]
+    )
 
     # Return the launch description, including robot description-related arguments and RViz node
     return launch.LaunchDescription(
-        description_launch_args + launch_args + [
+        description_launch_args
+        + launch_args
+        + [
             # Launch robot_state_publisher
             launch_ros.actions.Node(
-                package='robot_state_publisher',
-                executable='robot_state_publisher',
-                name='robot_state_publisher',
-                output='screen',
+                package="robot_state_publisher",
+                executable="robot_state_publisher",
+                name="robot_state_publisher",
+                output="screen",
                 parameters=[robot_description, use_sim_time],
             ),
             # Launch cca_ros_viz node
             launch_ros.actions.Node(
-                package='cca_ros_viz',
-                executable='cca_ros_viz_node',
-                name='cca_ros_viz',
-                output='screen',
+                package="cca_ros_viz",
+                executable="cca_ros_viz_node",
+                name="cca_ros_viz",
+                output="screen",
                 parameters=[
                     robot_description,
                     robot_description_semantic,
                     cca_ros_viz_setup_params,
-                    use_sim_time
+                    use_sim_time,
                 ],
             ),
             # Launch RViz with the specified configuration
             launch_ros.actions.Node(
-                package='rviz2',
-                executable='rviz2',
-                name='rviz2',
-                output='screen',
-                arguments=['-d', rviz_config_file],  # Load RViz config file
+                package="rviz2",
+                executable="rviz2",
+                name="rviz2",
+                output="screen",
+                arguments=["-d", rviz_config_file],  # Load RViz config file
                 parameters=[
                     robot_description,
                     robot_description_semantic,
-                    use_sim_time
+                    cca_ros_viz_setup_params,
+                    use_sim_time,
                 ],
             ),
         ]

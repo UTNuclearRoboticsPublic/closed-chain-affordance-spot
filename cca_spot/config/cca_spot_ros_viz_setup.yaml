@@ -1,6 +1,4 @@
-####################################################################################
-# ROS-related attributes pertaining to Spot for visualization of joint trajectories#
-####################################################################################
+# *** ROS-related attributes pertaining to Spot for visualization of joint trajectories*** #
 
 /**: # to enable parameter usage across different nodes
   ros__parameters:
