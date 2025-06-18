@@ -15,4 +15,4 @@
 
     ee_to_tool_offset: [0.07805, 0.0008, -0.01772] # Location of the tool in the EE frame
 
-    rviz_fixed_frame: "base_footprint" # Base frame from the urdf
+    rviz_fixed_frame: "body" # Base frame from the urdf
