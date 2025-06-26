@@ -7,10 +7,12 @@ This repository contains the `cca_spot` package, which implements the closed-cha
 - `ROS Humble`
 
 ## Dependencies
+- [CCA Libraries](https://github.com/UTNuclearRoboticsPublic/closed_chain_affordance.git)
+- [CCA ROS Interface](https://github.com/UTNuclearRoboticsPublic/closed_chain_affordance_ros.git)
 - [`spot_ros`](https://github.com/UTNuclearRoboticsPublic/spot_ros.git)
 - [`spot_manipulation`](https://github.com/UTNuclearRoboticsPublic/spot_manipulation.git)
 
-If you're not using a real robot, it's sufficient to build only the `spot_description` and `spot_moveit_config` packages, which are used for visualization and collision checking:
+If you're not using a real robot, from `spot_ros` and `spot_manipulation`, it's sufficient to build only the `spot_description` and `spot_moveit_config` packages, which are used for visualization and collision checking:
 ```bash
 colcon build --packages-select spot_description spot_moveit_config
 ```
@@ -22,11 +24,8 @@ colcon build
 > **Tip:** If you'd like to use your own robot description or MoveIt config for the spot arm, simply update the corresponding entries in the launch files under the `launch/` directory.
 
 
-## Build and Install Instructions:
-1. Install the closed-chain affordance planning libraries by following instructions from the following repository:
-   [Link to instructions](https://github.com/UTNuclearRoboticsPublic/closed_chain_affordance_ros.git)
-
-2. Clone this repository onto your machine ROS2 workspace `src` folder:
+## Installation 
+1. Navigate to your ROS2 workspace `src` folder and clone the repository:
    ``` bash
    cd ~/<ros2_ws_name>/src
    ```
@@ -37,17 +36,13 @@ colcon build
 3. Build and source the `cca_spot` package:
    ```bash
    cd ~/<ros2_ws_name>
-   ```
-   ```bash
-   colcon build --packages-select cca_spot
-   ```
-   ```bash
+   colcon build --packages-select cca_spot --cmake-args -DCMAKE_BUILD_TYPE=Release
    source install/setup.bash
    ```
 
-## Run Instructions:
+## Usage
 
-### Using With a Physical Robot
+### With Physical Robot
 To execute CCA-generated joint trajectories on the Spot robot:
 
 1. Run the Spot driver:
@@ -72,7 +67,7 @@ To execute CCA-generated joint trajectories on the Spot robot:
    ros2 launch cca_spot cca_spot.launch.py
    ```
 
-### Using Without a Physical Robot
+### Without Physical Robot
 You can plan and visualize joint trajectories for the BD Spot using the CCA framework without needing a physical robot. The following demonstration showcases various CCA framework features on Spot.
 
 1. Launch the offline state publisher for Spot for a desired named pose:
