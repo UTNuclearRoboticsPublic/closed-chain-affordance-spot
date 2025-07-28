@@ -2,13 +2,13 @@
 # ROS-related attributes pertaining to Spot #
 #############################################
 
-cc_affordance_planner_ros:
+/**:
   ros__parameters:
     # --- Robot Name ---
     cca_robot: "spot" # Robot name. This package must be named cc_affordance_<cca_robot>_description
 
     # --- Action Servers - follow_joint_trajectory types---
-    cca_robot_as: "/arm_controller/follow_joint_trajectory" # To execute robot trajectory on the robot
+    cca_robot_as: "/spot_moveit/arm_controller/follow_joint_trajectory" # To execute robot trajectory on the robot
 
     # cca_gripper_as: "/finger_controller/follow_joint_trajectory" # To execute gripper trajectory on the robot. Goal will be sent simultaneously with the robot trajectory but separately. #Optional
 
