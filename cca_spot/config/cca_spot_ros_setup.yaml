@@ -16,3 +16,6 @@
 
     # --- Joint states topic ---
     cca_joint_states_topic: "/spot_driver/joint_states"
+
+    # --- How to build the robot - from yaml or urdf ---
+    cca_build_robot_from: "yaml"
