@@ -36,7 +36,7 @@ def generate_launch_description():
     # Create a Node instance for the cca_spot node
     cc_affordance_planner_ros_node_with_params = Node(
         package="cca_spot",
-        executable="cca_spot_node",
+        executable="cca_spot_demo",
         name="cc_affordance_planner_ros",
         prefix=[node_prefix],
         emulate_tty=emulate_tty,

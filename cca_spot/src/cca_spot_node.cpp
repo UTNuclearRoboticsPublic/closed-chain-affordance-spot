@@ -6,170 +6,116 @@
 // "A closed-chain approach to generating affordance joint trajectories for robotic manipulators."
 //
 // Usage Instructions:
-// 1. The framework requires only two inputs: planner configuration and task description. See the examples provided
-//    in the code for various affordance and motion types and how to define these inputs.
-// 2. The main function has comment blocks for the following use cases. Uncomment as needed.
-//    - Basic Use Case: Plan, visualize, and execute a joint trajectory from the current robot configuration.
-//    - Optional Advanced Use Cases:
-//    - Optional Use Case 1: Plan, visualize, and execute while tracking the status of planning and execution.
-//    - Optional Use Case 2: Plan, visualize, and execute from a desired robot start configuration, or plan and
-//      visualize without connecting to a real robot.
-// Important Note:
-// You can run the example tasks directly on the robot. However, in the basic use case, the framework plans
-// from the robot's current configuration, which may not be suitable for these examples. As a result, we
-// recommend using Optional Use Case 2 to run the example tasks and visualize them in RVIZ. Case 2 provides
-// a predefined start configuration to ensure compatibility with the examples.
+// 1. The framework requires only two inputs: planner configuration and task description. See repo README.md Task
+// Examples section for task-description examples.
 /*************************************/
 #include "rclcpp/rclcpp.hpp"
 #include <Eigen/Core>
 #include <affordance_util/affordance_util.hpp>
 #include <cc_affordance_planner/cc_affordance_planner.hpp>
 #include <cc_affordance_planner/cc_affordance_planner_interface.hpp>
-#include <cc_affordance_planner_ros/cc_affordance_planner_ros.hpp>
+#include <cca_ros/cca_ros.hpp>
+#include <chrono>
+#include <thread>
 
-enum ExampleType
+class CcaSpot : public cca_ros::CcaRos
 {
-    AFFORDANCE_TRANSLATION,
-    AFFORDANCE_ROTATION,
-    AFFORDANCE_SCREW,
-    APPROACH,
-};
-
-// Function to generate example planner configurations and task descriptions based on the ExampleType
-std::pair<cc_affordance_planner::PlannerConfig, cc_affordance_planner::TaskDescription>
-get_example_planner_config_and_task_description(const ExampleType &example_type)
-{
-    cc_affordance_planner::PlannerConfig planner_config;
-    planner_config.accuracy = 10.0 / 100.0;
-    planner_config.trajectory_density = 10;
-
-    affordance_util::ScrewInfo aff;
-    Eigen::VectorXd aff_goal;
-    cc_affordance_planner::TaskDescription task_description;
-
-    switch (example_type)
+  public:
+    explicit CcaSpot(const std::string &node_name, const rclcpp::NodeOptions &node_options)
+        : cca_ros::CcaRos(node_name, node_options)
     {
-    case ExampleType::AFFORDANCE_ROTATION:
-        aff.type = affordance_util::ScrewType::ROTATION;
-        aff.axis = Eigen::Vector3d(0, 0, 1);
-        aff.location = Eigen::Vector3d(0.0, 0.0, 0.0);
-        aff_goal = (Eigen::VectorXd(1) << (1.0 / 2.0) * M_PI).finished();
-        task_description.affordance_info = aff;
-        task_description.nof_secondary_joints = 1;
-        task_description.secondary_joint_goals = aff_goal;
-        break;
-
-    case ExampleType::AFFORDANCE_TRANSLATION:
-        aff.type = affordance_util::ScrewType::TRANSLATION;
-        aff.axis = Eigen::Vector3d(1.0, 0.0, 0.0);
-        aff.location = Eigen::Vector3d(0.0, 0.0, 0.0);
-        aff_goal = (Eigen::VectorXd(1) << 0.24).finished();
-        task_description.affordance_info = aff;
-        task_description.nof_secondary_joints = 1;
-        task_description.secondary_joint_goals = aff_goal;
-        break;
-
-    case ExampleType::AFFORDANCE_SCREW:
-        aff.type = affordance_util::ScrewType::SCREW;
-        aff.axis = Eigen::Vector3d(0, 0, 1);
-        aff.location = Eigen::Vector3d(0.0, 0.0, 0.0);
-        aff.pitch = 0.5;
-        aff_goal = (Eigen::VectorXd(1) << (1.0 / 2.0) * M_PI).finished();
-        task_description.affordance_info = aff;
-        task_description.nof_secondary_joints = 1;
-        task_description.secondary_joint_goals = aff_goal;
-        break;
-
-    case ExampleType::APPROACH:
-        aff.type = affordance_util::ScrewType::ROTATION;
-        aff.axis = Eigen::Vector3d(0, 0, 1);
-        aff.location = Eigen::Vector3d(0.0, 0.0, 0.0);
-        aff_goal = (Eigen::VectorXd(1) << 0.0).finished();
-
-        Eigen::Matrix4d approach_pose;
-        approach_pose << 0.998453, 0.0378028, 0.0407843, 0.529228, -0.0380367, 0.999264, 0.00497515, -0.16148,
-            -0.0405662, -0.00651876, 0.999156, 0.100135, 0, 0, 0, 1;
-
-        task_description.motion_type = cc_affordance_planner::MotionType::APPROACH;
-        task_description.affordance_info = aff;
-        task_description.nof_secondary_joints = 2;
-        task_description.secondary_joint_goals = (Eigen::VectorXd(2) << 0, aff_goal).finished();
-        task_description.grasp_pose = approach_pose;
-        break;
     }
 
-    return std::make_pair(planner_config, task_description);
-}
-
-// Function to block until the robot completes the planned trajectory
-void block_until_trajectory_execution(const std::shared_ptr<cc_affordance_planner_ros::Status> &motion_status,
-                                      const rclcpp::Logger &logger)
-{
-    rclcpp::Rate loop_rate(4);
-    while (*motion_status != cc_affordance_planner_ros::Status::SUCCEEDED)
+    // Function to run the planner for a given task and/or execute that task on the robot
+    bool run(const cca_ros::PlanningRequest &planning_request)
     {
-        if (*motion_status == cc_affordance_planner_ros::Status::UNKNOWN)
+        motion_status_ = planning_request.status;
+
+        return this->plan_visualize_and_execute(planning_request);
+    }
+    // Function overload to plan multiple tasks at once
+    bool run(const cca_ros::PlanningRequests &planning_requests)
+    {
+        motion_status_ = planning_requests.status;
+
+        return this->plan_visualize_and_execute(planning_requests);
+    }
+
+    // Function to block until the robot completes the planned trajectory
+    void block_until_trajectory_execution()
+    {
+        rclcpp::Rate loop_rate(4);
+        auto start_time = std::chrono::steady_clock::now();
+
+        while (*motion_status_ != cca_ros::Status::SUCCEEDED)
         {
-            RCLCPP_ERROR(logger, "Motion was interrupted mid-execution.");
+            if (*motion_status_ == cca_ros::Status::UNKNOWN)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Motion was interrupted mid-execution.");
+                auto current_time = std::chrono::steady_clock::now();
+                if (std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() > 60)
+                {
+                    RCLCPP_ERROR(this->get_logger(), "Timeout waiting for motion to complete.");
+                    return;
+                }
+            }
+            if (!rclcpp::ok())
+            {
+                RCLCPP_ERROR(this->get_logger(), "Exiting due to ROS signal");
+                return;
+            }
+            loop_rate.sleep();
         }
-        loop_rate.sleep();
     }
-}
+
+  private:
+    std::shared_ptr<cca_ros::Status> motion_status_;
+    bool includes_gripper_goal_ = false;
+};
 
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions node_options;
-    node_options.automatically_declare_parameters_from_overrides(true);
-    auto node =
-        std::make_shared<cc_affordance_planner_ros::CcAffordancePlannerRos>("cc_affordance_planner_ros", node_options);
+    auto node = std::make_shared<CcaSpot>("cca_ros", node_options);
 
-    // Start spinning the node in a separate thread to enable ROS functionalities like parameter reading and joint
-    // states
-    std::thread spinner_thread([&node]() { rclcpp::spin(node); });
+    RCLCPP_INFO(node->get_logger(), "CCA Planner is active");
 
-    rclcpp::sleep_for(std::chrono::seconds(1)); // Sleep for 1 second to ensure ROS is initialized properly
+    // Spin the node so joint states can be read
+    std::jthread spinner_thread([node]() { rclcpp::spin(node); });
 
-    /// REQUIRED INPUT: Planner configuration and task description. Example provided below.
-    auto [planner_config, task_description] =
-        get_example_planner_config_and_task_description(ExampleType::AFFORDANCE_ROTATION);
+    /// REQUIRED INPUT: Task description. For quick start, the following block provides an example task description to
+    /// do a simple linear motion along the z-axis from the current robot configuration. Edit as needed. See this
+    /// package's demo folder or repo README.md for various other examples that cover motions including rotation, screw,
+    /// cartesian goal, ee orientation jog, etc. It is also possible to plan multiple of these tasks together as a long
+    /// joint trajectory.
+    ///------------------------------------------------------------------///
+    cca_ros::PlanningRequest req;
 
-    /*******************************************/
-    // BASIC USE CASE: Plan and execute a joint trajectory for a given task from the current robot configuration
-    /* if (!(node->run_cc_affordance_planner(planner_config, task_description))) */
-    /* { */
-    /*     RCLCPP_ERROR(node->get_logger(), "Planning and execution failed"); */
-    /* } */
+    // Specify planning type
+    req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
 
-    /*******************************************/
-    // OPTIONAL USE CASE 1: Plan, visualize, and execute while tracking the planning and execution status
-    /* auto motion_status = */
-    /*     std::make_shared<cc_affordance_planner_ros::Status>(cc_affordance_planner_ros::Status::UNKNOWN); */
-    /* if (!(node->run_cc_affordance_planner(planner_config, task_description, motion_status))) */
-    /* { */
-    /*     RCLCPP_ERROR(node->get_logger(), "Planning and execution failed"); */
-    /*     rclcpp::shutdown(); */
-    /*     return -1; */
-    /* } */
-    /* block_until_trajectory_execution(motion_status, node->get_logger()); */
+    // Affordance info
+    req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
+    req.task_description.affordance_info.axis = Eigen::Vector3d(0, 0, 1);
+    req.task_description.affordance_info.location = Eigen::Vector3d::Zero();
 
-    /*******************************************/
-    // OPTIONAL USE CASE 2: Plan, visualize, and execute from a desired start robot configuration
-    const Eigen::VectorXd robot_start_config =
-        (Eigen::VectorXd(6) << 0.0, -1.09419, 2.2496, -0.567882, -0.796551,
-         0.396139)
-            .finished(); // Example robot configuration for planning and visualization
-    auto motion_status =
-        std::make_shared<cc_affordance_planner_ros::Status>(cc_affordance_planner_ros::Status::UNKNOWN);
+    // Goals
+    req.task_description.goal.affordance = 0.1; // Set desired goal for the affordance
 
-    if (!(node->run_cc_affordance_planner(planner_config, task_description, motion_status, robot_start_config)))
+    ///------------------------------------------------------------------///
+
+    // Run CCA planner and executor
+    if (node->run(req))
     {
-        RCLCPP_ERROR(node->get_logger(), "Planning and execution failed");
-        rclcpp::shutdown();
-        return -1;
+        RCLCPP_INFO(node->get_logger(), "Successfully called CCA action");
+        node->block_until_trajectory_execution(); // Optionally, block until execution
     }
-
-    block_until_trajectory_execution(motion_status, node->get_logger());
+    else
+    {
+        RCLCPP_ERROR(node->get_logger(), "CCA action failed");
+        rclcpp::shutdown();
+    }
 
     rclcpp::shutdown();
     return 0;
