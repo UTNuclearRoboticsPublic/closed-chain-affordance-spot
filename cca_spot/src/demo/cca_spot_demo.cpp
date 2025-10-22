@@ -29,16 +29,18 @@ class CcaSpot : public cca_ros::CcaRos
     // Function to run the planner for a given task and/or execute that task on the robot
     bool run(const cca_ros::PlanningRequest &planning_request)
     {
-        motion_status_ = planning_request.status;
 
-        return this->plan_visualize_and_execute(planning_request);
+	cca_ros::PlanningResponse response = this->plan(planning_request);
+        motion_status_ = response.status;
+	return response.result.success;
     }
     // Function overload to plan multiple tasks at once
-    bool run(const cca_ros::PlanningRequests &planning_requests)
+    bool run(const std::vector<cca_ros::PlanningRequest> &planning_requests)
     {
-        motion_status_ = planning_requests.status;
 
-        return this->plan_visualize_and_execute(planning_requests);
+	cca_ros::PlanningResponse response = this->plan(planning_requests);
+        motion_status_ = response.status;
+	return response.result.success;
     }
 
     // Function to block until the robot completes the planned trajectory
@@ -70,7 +72,6 @@ class CcaSpot : public cca_ros::CcaRos
 
   private:
     std::shared_ptr<cca_ros::Status> motion_status_;
-    bool includes_gripper_goal_ = false;
 };
 // Demo motions in order
 enum DemoMotion
@@ -273,7 +274,7 @@ int main(int argc, char **argv)
     /// as node->run(planner_config, task_description). There is no need to create std::vectors of them
 
     ///------------------------------------------------------------------///
-    cca_ros::PlanningRequests planning_requests;
+    std::vector<cca_ros::PlanningRequest> planning_requests;
 
     const std::vector<DemoMotion> demo_motions = {
         DemoMotion::ROLL_FORWARD, DemoMotion::ROLL_BACKWARD, DemoMotion::PITCH_FORWARD, DemoMotion::PITCH_BACKWARD,
@@ -286,8 +287,7 @@ int main(int argc, char **argv)
     {
 
         const cca_ros::PlanningRequest &req = get_demo_description(demo_motion);
-        planning_requests.planner_config.push_back(req.planner_config);
-        planning_requests.task_description.push_back(req.task_description);
+        planning_requests.push_back(req);
     }
     ///------------------------------------------------------------------///
 
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
         (Eigen::VectorXd(6) << -0.00015592575073242188, -0.8980185389518738, 1.8094338178634644, 0.000377655029296875,
          -0.8991076946258545, 0.0015475749969482422)
             .finished();
-    planning_requests.start_state.robot = READY_CONFIG;
+    planning_requests.front().start_state.robot = READY_CONFIG;
 
     if (node->run(planning_requests)) ///<-- This is where the planner is called.
     {

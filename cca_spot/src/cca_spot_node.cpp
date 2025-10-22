@@ -29,16 +29,18 @@ class CcaSpot : public cca_ros::CcaRos
     // Function to run the planner for a given task and/or execute that task on the robot
     bool run(const cca_ros::PlanningRequest &planning_request)
     {
-        motion_status_ = planning_request.status;
 
-        return this->plan_visualize_and_execute(planning_request);
+	cca_ros::PlanningResponse response = this->plan(planning_request);
+        motion_status_ = response.status;
+	return response.result.success;
     }
     // Function overload to plan multiple tasks at once
-    bool run(const cca_ros::PlanningRequests &planning_requests)
+    bool run(const std::vector<cca_ros::PlanningRequest> &planning_requests)
     {
-        motion_status_ = planning_requests.status;
 
-        return this->plan_visualize_and_execute(planning_requests);
+	cca_ros::PlanningResponse response = this->plan(planning_requests);
+        motion_status_ = response.status;
+	return response.result.success;
     }
 
     // Function to block until the robot completes the planned trajectory
@@ -70,7 +72,6 @@ class CcaSpot : public cca_ros::CcaRos
 
   private:
     std::shared_ptr<cca_ros::Status> motion_status_;
-    bool includes_gripper_goal_ = false;
 };
 
 int main(int argc, char **argv)
