@@ -190,8 +190,8 @@ cca_ros::PlanningRequest get_demo_description(const DemoMotion &demo_motion)
 
         // Goals
         req.task_description.goal.affordance = M_PI / 2.0; // Set desired goal for the affordance
-        req.task_description.goal.grasp_pose = Eigen::Matrix4d::Identity();
-        req.task_description.goal.grasp_pose.block<3, 1>(0, 3) = Eigen::Vector3d(0.3, 0.3, 0.5);
+        req.task_description.goal.canonical_pose = Eigen::Matrix4d::Identity();
+        req.task_description.goal.canonical_pose.block<3, 1>(0, 3) = Eigen::Vector3d(0.3, 0.3, 0.5);
         break;
 
         // Do a linear motion along the z axis while constraining the EE yaw to a desired value
@@ -249,8 +249,8 @@ cca_ros::PlanningRequest get_demo_description(const DemoMotion &demo_motion)
             cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::CARTESIAN_GOAL);
 
         // Goal
-        req.task_description.goal.grasp_pose = Eigen::Matrix4d::Identity();
-        req.task_description.goal.grasp_pose.block<3, 1>(0, 3) =
+        req.task_description.goal.canonical_pose = Eigen::Matrix4d::Identity();
+        req.task_description.goal.canonical_pose.block<3, 1>(0, 3) =
             (Eigen::Vector3d() << 0.70932, 0.000336774, -0.017661).finished();
         break;
     }
