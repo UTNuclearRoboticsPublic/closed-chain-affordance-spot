@@ -22,6 +22,7 @@ import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
+from launch.conditions import IfCondition
 
 import launch
 from launch.actions import DeclareLaunchArgument
@@ -151,8 +152,13 @@ def generate_launch_description():
             "use_sim_time",
             default_value="false",
             description="Use simulated time (for simulation environments)",
+        ),
+        DeclareLaunchArgument(
+            'launch_rviz',
+            default_value='false',
+            description='Whether to launch RViz'
         )
-    ]
+    ] 
 
     (
         robot_description_content,
@@ -205,6 +211,7 @@ def generate_launch_description():
                 executable="rviz2",
                 name="rviz2",
                 output="screen",
+                condition=IfCondition(LaunchConfiguration('launch_rviz')),
                 arguments=["-d", rviz_config_file],  # Load RViz config file
                 parameters=[
                     robot_description,
