@@ -1,8 +1,8 @@
-"""Robot-specific settings for CCA Spot configuration.
+"""Robot-specific CCA settings for spot.
 
 Author: Crasun Jans
 
-This module centralizes all robot-specific configuration for Spot
+This module centralizes all robot-specific configuration for spot
 for usage with the Closed-Chain Affordance (CCA) planner. It provides:
 
 1. Launch arguments for robot hardware configuration
