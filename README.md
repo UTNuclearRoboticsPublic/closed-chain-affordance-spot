@@ -91,7 +91,19 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
    ros2 launch cca_spot cca_spot_demo.launch.py
    ```
 
-You are encouraged to modify the tasks in the demo node to plan and visualize trajectories tailored to your specific applications. Task examples are also provided in the package README.md.
+## Task Examples
+
+- Refer to the package's `README.md` [here](./cca_spot/README.md) for various planning examples.
+
+## Other Recommendations
+
+- Explore the interactive RVIZ plugin for code-free planning and execution
+- Modify demo node tasks to create custom trajectories
 
 ## Author
-Janak Panthi aka Crasun Jans
+
+**Janak Panthi** (aka Crasun Jans)
+
+## Support
+
+For issues, feature requests, or contributions, please open an issue in the GitHub repository.
