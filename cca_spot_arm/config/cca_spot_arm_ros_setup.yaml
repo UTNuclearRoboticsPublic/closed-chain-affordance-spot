@@ -1,0 +1,19 @@
+# *** ROS-related attributes pertaining to spot_arm *** #
+
+/**:
+  ros__parameters:
+    # --- Robot Name ---
+    cca_robot: "spot_arm" # Robot name. This package must be named cca_spot_arm
+
+    # --- Action Servers - follow_joint_trajectory types---
+    cca_robot_as: # To execute joint trajectory on the robot
+
+    # cca_gripper_as: # To execute gripper trajectory on the robot. Goal will be sent simultaneously with the robot trajectory but separately. #Optional
+
+    cca_robot_and_gripper_as: "/spot_moveit/mobile_manipulation_controller/follow_joint_trajectory" # To execute robot and gripper trajectory together on the robot. One unified trajectory is sent. #Optional
+
+    # --- Joint states topic ---
+    cca_joint_states_topic: "/spot_driver/joint_states"
+
+    # --- How to build the robot ---
+    cca_build_robot_from: "urdf" # Possible values are "yaml" or "urdf"
