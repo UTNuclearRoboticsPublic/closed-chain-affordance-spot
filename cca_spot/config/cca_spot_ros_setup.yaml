@@ -6,7 +6,7 @@
     cca_robot: "spot" # Robot name. This package must be named cca_spot
 
     # --- Action Servers - follow_joint_trajectory types---
-    cca_robot_as: # To execute joint trajectory on the robot
+    # cca_robot_as:  # To execute joint trajectory on the robot
 
     # cca_gripper_as: # To execute gripper trajectory on the robot. Goal will be sent simultaneously with the robot trajectory but separately. #Optional
 
