@@ -5,14 +5,14 @@
 
     joint_states_topic: "/spot_driver/joint_states" # Joint states topic name. Example: "robot_driver/joint_states"
 
-    planning_group: "whole_body" # MoveIt planning group name
+    planning_group: "mobile_body_and_arm" # MoveIt planning group name
 
     ref_frame: "base_footprint" # Default frame where the CCA planning plugin will show the screw interactive marker
 
     ee_frame: "arm0_tool0" # End-effector frame
 
-    tool_frame: "arm0_tool0" # Frame that follows the screw path for planning purposes
+    tool_frame: "cca_tool_frame" # Frame that follows the screw path for planning purposes
 
     ee_to_tool_offset: [0.0, 0.0, 0.0] # Location of the tool in the EE frame. Example: [0.07805, 0.0008, -0.01772] 
 
-    rviz_fixed_frame: "body" # Base frame from the urdf
+    rviz_fixed_frame: "base_footprint" # Base frame from the urdf
