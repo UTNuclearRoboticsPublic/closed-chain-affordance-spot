@@ -13,4 +13,4 @@ end_effector:
 
 tool: # This does not have to be in the URDF, and is usually located at the center of the palm.
   - name: arm0_tool0 # Example: robot_tool 
-    offset_from_ee_frame: [0.0, 0.0, 0.0]# Example: [0.0, 0.0, 0.02] # Tool location in the EE frame
+    offset_from_ee_frame: [0.0, 0.0, 0.0] # Example: [0.0, 0.0, 0.02] # Tool location in the EE frame
