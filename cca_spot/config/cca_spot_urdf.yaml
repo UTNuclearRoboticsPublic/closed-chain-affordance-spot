@@ -1,4 +1,4 @@
-# **Info for the spot_arm robot to build description from URDF** #
+# **Info for the spot robot to build description from URDF** #
 # Provide the reference frame, kinematic chain, end effector and tool info.
 ref_frame:
   - name: base_footprint # Example: base_link

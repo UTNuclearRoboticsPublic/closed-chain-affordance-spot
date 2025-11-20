@@ -18,10 +18,10 @@
 #include <chrono>
 #include <thread>
 
-class CcaRobot : public cca_ros::CcaRos
+class CcaSpotArm : public cca_ros::CcaRos
 {
   public:
-    explicit CcaRobot(const std::string &node_name, const rclcpp::NodeOptions &node_options)
+    explicit CcaSpotArm(const std::string &node_name, const rclcpp::NodeOptions &node_options)
         : cca_ros::CcaRos(node_name, node_options)
     {
     }
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions node_options;
-    auto node = std::make_shared<CcaRobot>("cca_ros", node_options);
+    auto node = std::make_shared<CcaSpotArm>("cca_ros", node_options);
 
     RCLCPP_INFO(node->get_logger(), "CCA Planner is active");
 

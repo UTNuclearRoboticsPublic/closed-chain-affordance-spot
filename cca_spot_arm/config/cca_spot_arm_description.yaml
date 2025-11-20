@@ -1,40 +1,38 @@
-# **Info for the spot_arm robot to build description from this yaml** #
-# If a URDF is available, use cca_spot_arm_urdf.yaml instead.
-# Define the reference frame, joint axes, their locations, and the tool's position.
-# Add or remove joint fields as needed to accurately represent the robot.
+# Provide the reference frame, joint axes, their location, and the location of the tool
+# The following info is for the Spot robot arm
 ref_frame:
-  - name: # Example: arm0_base_link
+  - name: arm0_base_link
 
 robot_joints:
-  - name: # Example: arm0_shoulder_roll 
-    w: # Example: [0, 0, 1]
-    q: # Example: [0, 0, 0]
+  - name: arm0_shoulder_yaw
+    w: [0, 0, 1]
+    q: [0, 0, 0]
 
-  - name: 
-    w: 
-    q: 
+  - name: arm0_shoulder_pitch
+    w: [0, 1, 0]
+    q: [0, 0, 0]
 
-  - name: 
-    w: 
-    q: 
+  - name: arm0_elbow_pitch
+    w: [0, 1, 0]
+    q: [0.3385, -0.0001, -0.0003]
 
-  - name: 
-    w: 
-    q: 
+  - name: arm0_elbow_roll
+    w: [1, 0, 0]
+    q: [0.7428, -0.0003, 0.0693]
 
-  - name: 
-    w: 
-    q: 
+  - name: arm0_wrist_pitch
+    w: [0, 1, 0]
+    q: [0.7428, -0.0003, 0.0693]
 
-  - name: 
-    w: 
-    q: 
+  - name: arm0_wrist_roll
+    w: [1, 0, 0]
+    q: [0.7428, -0.0003, 0.0693]
 
 end_effector:
-  - gripper_joint_name: 
-    frame_name: # This will be the parent frame for the tool
-    q: 
+  - gripper_joint_name: arm0_fingers
+    frame_name: arm0_fingers
+    q: [0.86025, -0.0003, 0.08412] # EE location
 
 tool:
-  - name: # This is usually at the center of the palm
-    offset_from_ee_frame: # Tool location from EE frame
+  - name: arm0_tool0 # This is usually at the center of the palm
+    offset_from_ee_frame: [0.07805, 0.0008, -0.01772] # Tool location from EE
