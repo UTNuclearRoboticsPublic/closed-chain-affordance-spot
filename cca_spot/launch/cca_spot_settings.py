@@ -63,7 +63,7 @@ def declare_launch_args():
         ),
         DeclareLaunchArgument(
             "kinematic_model",
-            default_value="none",
+            default_value="mobile_manipulation",
             choices=["none", "body_assist", "mobile_manipulation"],
             description="Kinematic model variant to use.",
         ),
