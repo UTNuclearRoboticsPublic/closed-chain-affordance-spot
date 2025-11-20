@@ -1,5 +1,5 @@
 # Closed-Chain Affordance Planning for the BD Spot using ROS2
-This repository contains the `cca_spot` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot arm.
+This repository contains the `cca_spot_arm` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot arm.
 
 ## Requirements
 
@@ -33,10 +33,10 @@ colcon build
    git clone git@github.com:UTNuclearRoboticsPublic/closed_chain_affordance_spot.git
    ```
 
-3. Build and source the `cca_spot` package:
+3. Build and source the `cca_spot_arm` package:
    ```bash
    cd ~/<ros2_ws_name>
-   colcon build --packages-select cca_spot --cmake-args -DCMAKE_BUILD_TYPE=Release
+   colcon build --packages-select cca_spot_arm --cmake-args -DCMAKE_BUILD_TYPE=Release
    source install/setup.bash
    ```
 
@@ -53,18 +53,18 @@ To execute CCA-generated joint trajectories on the Spot robot:
 2. Launch the CCA visualizer for Spot:
 
    ```bash
-   ros2 launch cca_spot cca_spot_viz.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm_viz.launch.py
    ```
 
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
    ```bash
-   ros2 launch cca_spot cca_spot_action_server.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm_action_server.launch.py
    ```
    At this point, you should be able to interactively plan and execute trajectories using the Rviz plugin. 
 
-3. Alternatively, for programmatic task definition, launch the CCA planner which will plan for the tasks defined in `src/cca_spot_node.cpp`:
+3. Alternatively, for programmatic task definition, launch the CCA planner which will plan for the tasks defined in `src/cca_spot_arm_node.cpp`:
    ```bash
-   ros2 launch cca_spot cca_spot.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm.launch.py
    ```
 
 ### Without Physical Robot
@@ -78,22 +78,22 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
 2. Launch the CCA-visualizer for Spot:
 
    ```
-   ros2 launch cca_spot cca_spot_viz.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm_viz.launch.py
    ```
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
    ```bash
-   ros2 launch cca_spot cca_spot_action_server.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm_action_server.launch.py
    ```
    At this point, you should be able to interactively plan trajectories using the Rviz plugin. 
 
 3. Alternatively, launch the CCA planner demo node:
    ```
-   ros2 launch cca_spot cca_spot_demo.launch.py
+   ros2 launch cca_spot_arm cca_spot_arm_demo.launch.py
    ```
 
 ## Task Examples
 
-- Refer to the package's `README.md` [here](./cca_spot/README.md) for various planning examples.
+- Refer to the package's `README.md` [here](./cca_spot_arm/README.md) for various planning examples.
 
 ## Other Recommendations
 
