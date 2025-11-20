@@ -1,15 +1,15 @@
-"""ROS 2 launch script to launch the CCA planner for the tasks defined in src/demo/cca_spot_demo.cpp
+"""ROS 1 launch script to launch the CCA planner for the tasks defined in src/demo/cca_spot_arm_demo.cpp
 
 Author: Crasun Jans
 
-This script launches the CCA planner for the demo tasks defined in src/demo/cca_spot_demo.cpp by loading the node with
+This script launches the CCA planner for the demo tasks defined in src/demo/cca_spot_arm_demo.cpp by loading the node with
 robot-specific CCA settings and robot description. 
 
 The robot-specific configuration is automatically imported from cca_<robot>_settings.py in the
 same directory.
 
 ### Usage:
-    ros2 launch cca_spot cca_spot_demo.launch.py
+    ros2 launch cca_spot_arm cca_spot_arm_demo.launch.py
 """
 
 import os, importlib.util
@@ -19,7 +19,7 @@ from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
-def load_settings_module(package='cca_spot', module_name='cca_spot_settings'):
+def load_settings_module(package='cca_spot_arm', module_name='cca_spot_arm_settings'):
     """Dynamically load the CCA settings module from a package's launch folder."""
     try:
         settings_path = os.path.join(
@@ -89,8 +89,8 @@ def generate_launch_description():
         + [debug_arg]
         + [
             Node(
-                package="cca_spot",
-                executable="cca_spot_demo",
+                package="cca_spot_arm",
+                executable="cca_spot_arm_demo",
                 name="cc_affordance_planner_ros",
                 output="screen",
                 prefix=[node_prefix],
