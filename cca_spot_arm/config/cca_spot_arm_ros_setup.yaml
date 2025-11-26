@@ -8,11 +8,11 @@
     cca_robot: "spot_arm" # Robot name. This package must be named cc_affordance_<cca_robot>_description
 
     # --- Action Servers - follow_joint_trajectory types---
-    cca_robot_as: "/spot_moveit/arm_controller/follow_joint_trajectory" # To execute robot trajectory on the robot
+    # cca_robot_as: "/spot_moveit/arm_controller/follow_joint_trajectory" # To execute robot trajectory on the robot
 
     # cca_gripper_as: "/finger_controller/follow_joint_trajectory" # To execute gripper trajectory on the robot. Goal will be sent simultaneously with the robot trajectory but separately. #Optional
 
-    # cca_robot_and_gripper_as: "/arm_and_finger_controller/follow_joint_trajectory" # To execute robot and gripper trajectory together on the robot. One unified trajectory is sent. #Optional
+    cca_robot_and_gripper_as: "/spot_moveit/arm_and_finger_controller/follow_joint_trajectory" # To execute robot and gripper trajectory together on the robot. One unified trajectory is sent. #Optional
 
     # --- Joint states topic ---
     cca_joint_states_topic: "/spot_driver/joint_states"
