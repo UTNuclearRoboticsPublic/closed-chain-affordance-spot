@@ -80,8 +80,6 @@ int main(int argc, char **argv)
     rclcpp::NodeOptions node_options;
     auto node = std::make_shared<CcaRobot>("cca_ros", node_options);
 
-    RCLCPP_INFO(node->get_logger(), "CCA Planner is active");
-
     // Spin the node so joint states can be read
     std::jthread spinner_thread([node]() { rclcpp::spin(node); });
 
@@ -91,75 +89,94 @@ int main(int argc, char **argv)
     /// cartesian goal, ee orientation jog, etc. It is also possible to plan multiple of these tasks together as a long
     /// joint trajectory.
     ///------------------------------------------------------------------///
-    std::vector<cca_ros::PlanningRequest> reqs;
-    cca_ros::PlanningRequest approach_req;
-    approach_req.planner_config.ik_max_itr = 10000;
-    approach_req.execute_trajectory = true;
+    cca_ros::PlanningRequest wbc_base_req;
+    wbc_base_req.planner_config.ik_max_itr = 10000;
+    wbc_base_req.execute_trajectory = true;
+    wbc_base_req.planning_group = "mobile_body_and_arm";
 
-    const double GRIPPER_OPEN = -1.57;  // radians
+    cca_ros::PlanningRequest wbc_approach_req = wbc_base_req;;
+
+    const double GRIPPER_OPEN = -M_PI/2.0;  // radians
+    const double GRIPPER_HALFWAY_OPEN = -M_PI/4.0;  // radians
     const double GRIPPER_CLOSED = 0.0; // radians
     // Task description
     // Specify planning type
-    approach_req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::APPROACH);
+    wbc_approach_req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::APPROACH);
     // Affordance info
-    approach_req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
-    approach_req.task_description.affordance_info_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
-    approach_req.task_description.affordance_info_from.frame_name = "trashcan_frame";
-    approach_req.task_description.affordance_info_from.axis_in_final_pose = affordance_util::axis_to_vec(affordance_util::Axis::Y);
+    wbc_approach_req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
+    wbc_approach_req.task_description.affordance_info_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
+    wbc_approach_req.task_description.affordance_info_from.frame_name = "trashcan_frame";
+    wbc_approach_req.task_description.affordance_info_from.axis_in_final_pose = affordance_util::axis_to_vec(affordance_util::Axis::Y);
 
     // Affordative pose
-    approach_req.task_description.canonical_pose_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
-    approach_req.task_description.canonical_pose_from.frame_name = approach_req.task_description.affordance_info_from.frame_name;
+    wbc_approach_req.task_description.canonical_pose_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
+    wbc_approach_req.task_description.canonical_pose_from.frame_name = wbc_approach_req.task_description.affordance_info_from.frame_name;
     Eigen::Isometry3d canonical_pose_post_transform = Eigen::Isometry3d::Identity();
 
     // Set grasp orientation
     canonical_pose_post_transform.linear().col(0) = affordance_util::axis_to_vec(affordance_util::Axis::Y_MINUS);
     canonical_pose_post_transform.linear().col(1) = affordance_util::axis_to_vec(affordance_util::Axis::X_MINUS);
     canonical_pose_post_transform.linear().col(2) = affordance_util::axis_to_vec(affordance_util::Axis::Z_MINUS);
-    approach_req.task_description.canonical_pose_from.post_transform = canonical_pose_post_transform.matrix();
+    wbc_approach_req.task_description.canonical_pose_from.post_transform = canonical_pose_post_transform.matrix();
 
    // Goals
-   approach_req.task_description.goal.affordance = 0.2;
-   approach_req.task_description.goal.gripper = GRIPPER_OPEN;
+   wbc_approach_req.task_description.goal.affordance = 0.2;
+   wbc_approach_req.task_description.goal.gripper = GRIPPER_HALFWAY_OPEN;
 
    // Other things
-   approach_req.task_description.gripper_goal_type = affordance_util::GripperGoalType::CONTINUOUS;
-   approach_req.task_description.trajectory_density = 30;
-   // approach_req.time_step.robot_and_gripper = 0.5;
-   // approach_req.time_step.robot = 0.5;
-   // approach_req.time_step.gripper = 0.5;
+   wbc_approach_req.task_description.gripper_goal_type = affordance_util::GripperGoalType::CONTINUOUS;
 
-   reqs.push_back(approach_req);
+   cca_ros::PlanningRequest arm_base_req;
+   arm_base_req.planner_config.ik_max_itr = 50000;
+   arm_base_req.execute_trajectory = true;
+   arm_base_req.planning_group = "arm";
+   arm_base_req.time_step.robot_and_gripper = 0.2;
+   arm_base_req.time_step.robot = 0.2;
+   arm_base_req.time_step.gripper = 0.2;
 
-   // cca_ros::PlanningRequest hone_in_req;
-   // hone_in_req.task_description.affordance_info_from = approach_req.task_description.affordance_info_from;
-   // hone_in_req.task_description.affordance_info = approach_req.task_description.affordance_info;
-   //
-   // // Goals
-   // hone_in_req.task_description.goal.affordance = -0.1;
-   // hone_in_req.task_description.goal.gripper = GRIPPER_CLOSED;
-   //
-   // // Other things
-   // hone_in_req.task_description.gripper_goal_type = affordance_util::GripperGoalType::CONTINUOUS;
-   // hone_in_req.task_description.trajectory_density = 20;
-   // hone_in_req.time_step.robot_and_gripper = 0.5;
-   // hone_in_req.time_step.robot = 0.5;
-   // hone_in_req.time_step.gripper = 0.5;
-   //
-   // reqs.push_back(hone_in_req);
-    ///------------------------------------------------------------------///
+   std::vector<cca_ros::PlanningRequest> arm_reqs;
+   cca_ros::PlanningRequest arm_approach_req = arm_base_req;
+   arm_approach_req.task_description = wbc_approach_req.task_description;
+   arm_approach_req.task_description.goal.gripper = GRIPPER_OPEN;
+   arm_reqs.push_back(arm_approach_req);
+
+   cca_ros::PlanningRequest arm_hone_in_req = arm_base_req;
+   arm_hone_in_req.task_description.affordance_info_from = arm_approach_req.task_description.affordance_info_from;
+   arm_hone_in_req.task_description.affordance_info = arm_approach_req.task_description.affordance_info;
+
+   // Goals
+   arm_hone_in_req.task_description.goal.affordance = -0.1;
+   arm_hone_in_req.task_description.goal.gripper = GRIPPER_CLOSED;
+
+   // Other things
+   arm_hone_in_req.task_description.gripper_goal_type = affordance_util::GripperGoalType::CONTINUOUS;
+
+   arm_reqs.push_back(arm_hone_in_req);
 
     // Run CCA planner and executor
-    if (node->run(reqs))
+    if (node->run(wbc_approach_req))
     {
-        RCLCPP_INFO(node->get_logger(), "Successfully called CCA action");
+        RCLCPP_INFO(node->get_logger(), "Successfully executed whole body tasks");
         node->block_until_trajectory_execution(); // Optionally, block until execution
+
+        // Run CCA planner and executor
+        if (node->run(arm_reqs))
+        {
+            RCLCPP_INFO(node->get_logger(), "Successfully executed arm tasks");
+            node->block_until_trajectory_execution(); // Optionally, block until execution
+        }
+        else
+        {
+            RCLCPP_ERROR(node->get_logger(), "CCA action failed for the arm");
+        }
     }
     else
     {
-        RCLCPP_ERROR(node->get_logger(), "CCA action failed");
-        rclcpp::shutdown();
+        RCLCPP_ERROR(node->get_logger(), "CCA action failed for the whole body");
     }
+
+    ///------------------------------------------------------------------///
+
 
     rclcpp::shutdown();
     return 0;
