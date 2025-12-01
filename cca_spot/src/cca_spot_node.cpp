@@ -99,36 +99,48 @@ int main(int argc, char **argv)
     const double GRIPPER_OPEN = -M_PI/2.0;  // radians
     const double GRIPPER_HALFWAY_OPEN = -M_PI/4.0;  // radians
     const double GRIPPER_CLOSED = 0.0; // radians
+    const double INCHES_TO_METERS = 0.0254;
     // Task description
     // Specify planning type
     wbc_approach_req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::APPROACH);
     // Affordance info
-    wbc_approach_req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
+    wbc_approach_req.task_description.affordance_info.type = affordance_util::ScrewType::ROTATION;
     wbc_approach_req.task_description.affordance_info_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
-    wbc_approach_req.task_description.affordance_info_from.frame_name = "trashcan_frame";
-    wbc_approach_req.task_description.affordance_info_from.axis_in_final_pose = affordance_util::axis_to_vec(affordance_util::Axis::Y);
+    wbc_approach_req.task_description.affordance_info_from.frame_name = "affordance_frame";
+    Eigen::Isometry3d aff_post_transform = Eigen::Isometry3d::Identity();
+    const Eigen::Vector3d aff_t_offset_inches(0.0, 0.0, -6.0); // inches
+    const Eigen::Vector3d aff_t_offset_m = aff_t_offset_inches * INCHES_TO_METERS;
+    aff_post_transform.translation() = aff_t_offset_m;
+    wbc_approach_req.task_description.affordance_info_from.post_transform = aff_post_transform.matrix();
+    wbc_approach_req.task_description.affordance_info_from.axis_in_final_pose = affordance_util::axis_to_vec(affordance_util::Axis::Y_MINUS);
 
     // Affordative pose
     wbc_approach_req.task_description.canonical_pose_from.method = affordance_util::PoseSpecificationMethod::FROM_FRAME_NAME;
-    wbc_approach_req.task_description.canonical_pose_from.frame_name = wbc_approach_req.task_description.affordance_info_from.frame_name;
-    Eigen::Isometry3d canonical_pose_post_transform = Eigen::Isometry3d::Identity();
+    wbc_approach_req.task_description.canonical_pose_from.frame_name = "trashcan_frame";
+    Eigen::Isometry3d can_post_transform = Eigen::Isometry3d::Identity();
+    const Eigen::Vector3d can_t_offset_inches(6.0, 23.5, -3.0); // inches
+    const Eigen::Vector3d can_t_offset_m = can_t_offset_inches * INCHES_TO_METERS;
+    can_post_transform.translation() = can_t_offset_m;
 
     // Set grasp orientation
-    canonical_pose_post_transform.linear().col(0) = affordance_util::axis_to_vec(affordance_util::Axis::Y_MINUS);
-    canonical_pose_post_transform.linear().col(1) = affordance_util::axis_to_vec(affordance_util::Axis::X_MINUS);
-    canonical_pose_post_transform.linear().col(2) = affordance_util::axis_to_vec(affordance_util::Axis::Z_MINUS);
-    wbc_approach_req.task_description.canonical_pose_from.post_transform = canonical_pose_post_transform.matrix();
+    can_post_transform.linear().col(0) = affordance_util::axis_to_vec(affordance_util::Axis::Z_MINUS);
+    can_post_transform.linear().col(1) = affordance_util::axis_to_vec(affordance_util::Axis::X_MINUS);
+    can_post_transform.linear().col(2) = affordance_util::axis_to_vec(affordance_util::Axis::Y);
+    // wbc_approach_req.task_description.canonical_pose_from.post_transform = canonical_pose_post_transform.matrix();
+    wbc_approach_req.task_description.canonical_pose_from.post_transform = can_post_transform.matrix();
 
    // Goals
-   wbc_approach_req.task_description.goal.affordance = 0.2;
+   // wbc_approach_req.task_description.goal.affordance = 0.2;
+   wbc_approach_req.task_description.goal.affordance = M_PI/180.0 * 45.0; // 45 degrees in radians
    wbc_approach_req.task_description.goal.gripper = GRIPPER_HALFWAY_OPEN;
 
    // Other things
    wbc_approach_req.task_description.gripper_goal_type = affordance_util::GripperGoalType::CONTINUOUS;
+   wbc_approach_req.task_description.trajectory_density = 50;
 
    cca_ros::PlanningRequest arm_base_req;
    arm_base_req.planner_config.ik_max_itr = 50000;
-   arm_base_req.execute_trajectory = true;
+   // arm_base_req.execute_trajectory = true;
    arm_base_req.planning_group = "arm";
    arm_base_req.time_step.robot_and_gripper = 0.2;
    arm_base_req.time_step.robot = 0.2;
@@ -159,16 +171,16 @@ int main(int argc, char **argv)
         RCLCPP_INFO(node->get_logger(), "Successfully executed whole body tasks");
         node->block_until_trajectory_execution(); // Optionally, block until execution
 
-        // Run CCA planner and executor
-        if (node->run(arm_reqs))
-        {
-            RCLCPP_INFO(node->get_logger(), "Successfully executed arm tasks");
-            node->block_until_trajectory_execution(); // Optionally, block until execution
-        }
-        else
-        {
-            RCLCPP_ERROR(node->get_logger(), "CCA action failed for the arm");
-        }
+        // // Run CCA planner and executor
+        // if (node->run(arm_reqs))
+        // {
+        //     RCLCPP_INFO(node->get_logger(), "Successfully executed arm tasks");
+        //     node->block_until_trajectory_execution(); // Optionally, block until execution
+        // }
+        // else
+        // {
+        //     RCLCPP_ERROR(node->get_logger(), "CCA action failed for the arm");
+        // }
     }
     else
     {

@@ -32,11 +32,11 @@
           gripper_joint_name: arm0_fingers
 
         tool:
-          frame: arm0_tool0
+          frame: cca_arm_tool_frame
           offset_from_ee_frame: [0.19557, 0.0, 0.0]
 
         # Action servers for execution (robot or robot_and_gripper must be specified)
-        robot_as: ""                        # Optional: pure arm trajectory AS
+        robot_as: "/spot_moveit/arm_controller/follow_joint_trajectory" # Optional: pure arm trajectory AS
         gripper_as: ""                      # Optional: gripper-only AS
         robot_and_gripper_as: "/spot_moveit/arm_and_finger_controller/follow_joint_trajectory"
 
@@ -55,7 +55,7 @@
           gripper_joint_name: arm0_fingers
 
         tool:
-          frame: arm0_tool0
+          frame: cca_arm_tool_frame
           offset_from_ee_frame: [0.19557, 0.0, 0.0]
 
         # Action servers for execution (robot or robot_and_gripper must be specified)
