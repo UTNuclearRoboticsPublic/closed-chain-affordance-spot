@@ -18,10 +18,10 @@
 #include <chrono>
 #include <thread>
 
-class CcaSpot : public cca_ros::CcaRos
+class CcaRobot : public cca_ros::CcaRos
 {
   public:
-    explicit CcaSpot(const std::string &node_name, const rclcpp::NodeOptions &node_options)
+    explicit CcaRobot(const std::string &node_name, const rclcpp::NodeOptions &node_options)
         : cca_ros::CcaRos(node_name, node_options)
     {
     }
@@ -29,16 +29,18 @@ class CcaSpot : public cca_ros::CcaRos
     // Function to run the planner for a given task and/or execute that task on the robot
     bool run(const cca_ros::PlanningRequest &planning_request)
     {
-        motion_status_ = planning_request.status;
 
-        return this->plan_visualize_and_execute(planning_request);
+	cca_ros::PlanningResponse response = this->plan(planning_request);
+        motion_status_ = response.status;
+	return response.result.success;
     }
     // Function overload to plan multiple tasks at once
-    bool run(const cca_ros::PlanningRequests &planning_requests)
+    bool run(const std::vector<cca_ros::PlanningRequest> &planning_requests)
     {
-        motion_status_ = planning_requests.status;
 
-        return this->plan_visualize_and_execute(planning_requests);
+	cca_ros::PlanningResponse response = this->plan(planning_requests);
+        motion_status_ = response.status;
+	return response.result.success;
     }
 
     // Function to block until the robot completes the planned trajectory
@@ -70,16 +72,13 @@ class CcaSpot : public cca_ros::CcaRos
 
   private:
     std::shared_ptr<cca_ros::Status> motion_status_;
-    bool includes_gripper_goal_ = false;
 };
 
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     rclcpp::NodeOptions node_options;
-    auto node = std::make_shared<CcaSpot>("cca_ros", node_options);
-
-    RCLCPP_INFO(node->get_logger(), "CCA Planner is active");
+    auto node = std::make_shared<CcaRobot>("cca_ros", node_options);
 
     // Spin the node so joint states can be read
     std::jthread spinner_thread([node]() { rclcpp::spin(node); });
@@ -91,31 +90,31 @@ int main(int argc, char **argv)
     /// joint trajectory.
     ///------------------------------------------------------------------///
     cca_ros::PlanningRequest req;
+    req.planning_group = "arm";
 
+    // Task description
     // Specify planning type
     req.task_description = cc_affordance_planner::TaskDescription(cc_affordance_planner::PlanningType::AFFORDANCE);
-
     // Affordance info
     req.task_description.affordance_info.type = affordance_util::ScrewType::TRANSLATION;
-    req.task_description.affordance_info.axis = Eigen::Vector3d(0, 0, 1);
-    req.task_description.affordance_info.location = Eigen::Vector3d::Zero();
-
-    // Goals
-    req.task_description.goal.affordance = 0.1; // Set desired goal for the affordance
-
-    ///------------------------------------------------------------------///
+    req.task_description.affordance_info.axis = affordance_util::axis_to_vec(affordance_util::Axis::Z);
+    req.task_description.affordance_info.location = affordance_util::axis_to_vec(affordance_util::Axis::ORIGIN);
+    // Goal
+    req.task_description.goal.affordance = 0.1; // 10cm
 
     // Run CCA planner and executor
     if (node->run(req))
     {
-        RCLCPP_INFO(node->get_logger(), "Successfully called CCA action");
+        RCLCPP_INFO(node->get_logger(), "Successfully executed %s tasks", req.planning_group.c_str());
         node->block_until_trajectory_execution(); // Optionally, block until execution
+
     }
     else
     {
-        RCLCPP_ERROR(node->get_logger(), "CCA action failed");
-        rclcpp::shutdown();
+        RCLCPP_ERROR(node->get_logger(), "CCA action failed for the %s group", req.planning_group.c_str());
     }
+
+    ///------------------------------------------------------------------///
 
     rclcpp::shutdown();
     return 0;
