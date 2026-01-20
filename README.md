@@ -47,13 +47,13 @@ To execute CCA-generated joint trajectories on the Spot robot:
 
 1. Run the Spot driver:
    ```bash
-   ros2 launch spot_bringup bringup.launch.py hostname:=192.168.50.3
+   ros2 launch spot_bringup bringup.launch.py hostname:=192.168.50.3 has_arm:=True kinematic_model:="mobile_manipulation"
    ```
 
 2. Launch the CCA visualizer for Spot:
 
    ```bash
-   ros2 launch cca_spot cca_spot_val_and_viz.launch.py
+   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true kinematic_model:="mobile_manipulation"
    ```
 
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
@@ -72,13 +72,13 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
 
 1. Launch the offline state publisher for Spot for a desired named pose:
    ```bash
-   ros2 launch spot_description offline_state_publisher.launch.py configuration:='unstowed'
+   ros2 launch spot_description offline_state_publisher.launch.py has_arm:=True kinematic_model:="mobile_manipulation" configuration:="unstowed"
    ```
 
-2. Launch the CCA-visualizer for Spot:
+2. Launch the CCA visualizer for Spot:
 
-   ```
-   ros2 launch cca_spot cca_spot_val_and_viz.launch.py
+   ```bash
+   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true kinematic_model:="mobile_manipulation"
    ```
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
    ```bash
@@ -86,7 +86,12 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
    ```
    At this point, you should be able to interactively plan trajectories using the Rviz plugin. 
 
-3. Alternatively, launch the CCA planner demo node:
+3. Alternatively, for programmatic task definition, launch the CCA planner which will plan for the tasks defined in `src/cca_spot_node.cpp`:
+   ```bash
+   ros2 launch cca_spot cca_spot.launch.py
+   ```
+
+4. You may also run the demo by launching the CCA planner demo node:
    ```
    ros2 launch cca_spot cca_spot_demo.launch.py
    ```
