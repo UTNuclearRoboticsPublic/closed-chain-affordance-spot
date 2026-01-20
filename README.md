@@ -53,7 +53,7 @@ To execute CCA-generated joint trajectories on the Spot robot:
 2. Launch the CCA visualizer for Spot:
 
    ```bash
-   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true kinematic_model:="mobile_manipulation"
+   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true
    ```
 
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
@@ -78,7 +78,7 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
 2. Launch the CCA visualizer for Spot:
 
    ```bash
-   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true kinematic_model:="mobile_manipulation"
+   ros2 launch cca_spot cca_spot_val_and_viz.launch.py launch_rviz:=true 
    ```
    This launches both the visualizer and an interactive RVIZ plugin for code-free planning and execution. To plan and execute trajectories using the RViz plugin, start the following action server:
    ```bash
