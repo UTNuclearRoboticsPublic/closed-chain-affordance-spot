@@ -103,7 +103,7 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
 
 ## Task Examples
 
-- Refer to the package's `README.md` [here](./cca_spot/README.md) for various planning examples.
+- Refer to the CCA-ROS `README.md` Code Tutorial section [here](https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/blob/main/README.md) for various planning examples.
 
 ## Other Recommendations
 
