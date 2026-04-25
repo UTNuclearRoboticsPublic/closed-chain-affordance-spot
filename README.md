@@ -1,5 +1,5 @@
 # Closed-Chain Affordance Planning for the BD Spot using ROS2
-This repository contains the `cca_spot` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot robot.
+This repository contains the `cca_spot` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot robot.  The demonstration video of the underlying paper showcasing simulation and real-world tasks is available [here](https://www.youtube.com/watch?v=Ukv93hbNrOM). An interactive RViz plugin is also available as one of many ways to interface with the planner. See the [plugin demo videos](https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/blob/main/cca_ros_rviz_plugin/README.md) for a glance at the framework's capabilities.
 
 ## Requirements
 
