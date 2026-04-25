@@ -1,5 +1,5 @@
 # Closed-Chain Affordance Planning for the BD Spot using ROS2
-This repository contains the `cca_spot` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot robot.
+This repository contains the `cca_spot` package, which implements the closed-chain affordance planning framework on the Boston Dynamics Spot robot.  The demonstration video of the underlying paper showcasing simulation and real-world tasks is available [here](https://www.youtube.com/watch?v=Ukv93hbNrOM). An interactive RViz plugin is also available as one of many ways to interface with the planner. See the [plugin demo videos](https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/blob/main/cca_ros_rviz_plugin/README.md) for a glance at the framework's capabilities.
 
 ## Requirements
 
@@ -68,12 +68,17 @@ To execute CCA-generated joint trajectories on the Spot robot:
    ```
 
 ### Without Physical Robot
-You can plan and visualize joint trajectories for the BD Spot using the CCA framework without needing a physical robot. The following demonstration showcases various CCA framework features on Spot.
+You can plan and visualize joint trajectories for the BD Spot using the CCA framework without needing a physical robot. 
 
-1. Launch the offline state publisher for Spot for a desired named pose:
+1. Launch the Moveit fake controller to simulate trajectory execution:
    ```bash
-   ros2 launch spot_description offline_state_publisher.launch.py has_arm:=True kinematic_model:="mobile_manipulation" configuration:="unstowed"
+   ros2 launch spot_moveit_config fake_controller.launch.py kinematic_model:="mobile_manipulation"
    ```
+
+   > Alternatively, you may launch the Spot offline state publisher to visualize the robot in Rviz at a named configuration and to use this state for planning:
+   > ```bash
+   > ros2 launch spot_description offline_state_publisher.launch.py has_arm:=True kinematic_model:="mobile_manipulation" configuration:="unstowed"
+   > ```
 
 2. Launch the CCA visualizer for Spot:
 
@@ -98,7 +103,7 @@ You can plan and visualize joint trajectories for the BD Spot using the CCA fram
 
 ## Task Examples
 
-- Refer to the package's `README.md` [here](./cca_spot/README.md) for various planning examples.
+- Refer to the CCA-ROS `README.md` Code Tutorial section [here](https://github.com/UTNuclearRoboticsPublic/closed-chain-affordance-ros/blob/main/README.md) for various planning examples.
 
 ## Other Recommendations
 

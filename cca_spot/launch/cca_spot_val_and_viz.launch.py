@@ -48,6 +48,7 @@ declare_launch_args = cca_robot_settings.declare_launch_args
 define_robot_paths_and_settings = cca_robot_settings.define_robot_paths_and_settings
 generate_robot_description_content = cca_robot_settings.generate_robot_description_content
 generate_robot_description_semantic_content = cca_robot_settings.generate_robot_description_semantic_content
+generate_sensors_3d_yaml_content = cca_robot_settings.generate_sensors_3d_yaml_content
 
 
 def generate_launch_description():
@@ -77,6 +78,10 @@ def generate_launch_description():
         srdf_subset_args=settings.get("srdf_subset_args"),
     )
 
+    sensors_3d_params = generate_sensors_3d_yaml_content(
+        package_name=settings.get("sensors_3d_package"),
+        sensors_3d_yaml_rel_path=settings.get("sensors_3d_rel_path"),
+    )
     # Get CCA-relevant robot description and ros setup info for the robot
     cca_robot_description_params = settings["cca_robot_description_path"]
     robot_name = settings["cca_robot_package"].removeprefix("cca_")
@@ -91,6 +96,7 @@ def generate_launch_description():
     params_common = [
         {"robot_description": robot_description},
         {"robot_description_semantic": robot_description_semantic},
+        *([ sensors_3d_params ] if sensors_3d_params else []),  # added if configured
         cca_robot_description_params,
         use_sim_time,
     ]
